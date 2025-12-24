@@ -1,0 +1,106 @@
+services:
+  synapse:
+    image: docker.io/matrixdotorg/synapse:latest
+    # Since synapse does not retry to connect to the database, restart upon
+    # failure
+    restart: unless-stopped
+    # See the readme for a full documentation of the environment settings
+    # NOTE: You must edit homeserver.yaml to use postgres, it defaults to sqlite
+    environment:
+      - SYNAPSE_CONFIG_PATH=/data/homeserver.yaml
+    volumes:
+      # You may either store all the files in a local folder
+      - ../files:/data
+      # .. or you may split this between different storage points
+      # - ./files:/data
+      # - /path/to/ssd:/data/uploads
+      # - /path/to/large_hdd:/data/media
+    depends_on:
+      - db
+    # In order to expose Synapse, remove one of the following, you might for
+    # instance expose the TLS port directly:
+    # ports:
+    #  - 127.0.0.1:8448:8448/tcp
+    networks:
+      - matrix-network
+
+  matrix-authentication-service:
+    image: ghcr.io/element-hq/matrix-authentication-service:latest
+    restart: unless-stopped
+    environment:
+      # Point to the config file inside the container
+      - MAS_CONFIG=/app/config/config.yaml
+    volumes:
+      # Map your local config directory to /config container path
+
+      - ../configs/matrixAuthenticationServer/config.yaml:/app/config/config.yaml:ro
+    depends_on:
+      - db
+    networks:
+      - matrix-network
+
+  db:
+    image: postgres:18
+    env_file:
+      - ../mainServer.env
+    environment:
+      # ensure the database gets created correctly
+      # https://element-hq.github.io/synapse/latest/postgres.html#set-up-database
+      - POSTGRES_INITDB_ARGS=--encoding=UTF-8 --lc-collate=C --lc-ctype=C
+    volumes:
+      # You may store the database tables in a local folder..
+      - ../postgresData:/var/lib/postgresql
+      - ../scripts/postgres-init:/docker-entrypoint-initdb.d:ro
+      # .. or store them on some high performance storage for better results
+      # - /path/to/ssd/storage:/var/lib/postgresql
+    restart: unless-stopped
+    networks:
+      - matrix-network
+  
+  nginx:
+    image: nginx:1.29.3
+    restart: unless-stopped
+    volumes:
+      - ../configs/nginxMainServer:/etc/nginx
+      - ../certificates/mainServer:/etc/nginx/ssl
+    ports:
+      - 8448:8448
+      - 4444:4444
+    networks:
+      - matrix-network
+
+  clientTunnel4444:
+    image: frp-tunnel:latest
+    env_file:
+      ../publicIPServer.env # FRP_AUTH_TOKEN must be specified here
+    environment:
+      SERVER_ADDR: "matrix.vobler-tech.space"
+      SERVER_PORT: 7000
+      PROXY_NAME: "port4444Synapse"
+      LOCAL_IP: "nginx"
+      LOCAL_PORT: "4444"
+      REMOTE_PORT: "4444"
+      FRP_MODE: "client"
+    restart: unless-stopped
+    networks:
+      - matrix-network
+
+  clientTunnel8448:
+    image: frp-tunnel:latest
+    env_file:
+      ../publicIPServer.env # FRP_AUTH_TOKEN must be specified here
+    environment:
+      SERVER_ADDR: "matrix.vobler-tech.space"
+      SERVER_PORT: 7001
+      PROXY_NAME: "port8448Synapse"
+      LOCAL_IP: "nginx"
+      LOCAL_PORT: "8448"
+      REMOTE_PORT: "8448"
+      FRP_MODE: "client"
+    restart: unless-stopped
+    networks:
+      - matrix-network
+
+networks:
+  matrix-network:
+    driver: bridge

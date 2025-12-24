@@ -1,0 +1,14 @@
+serverAddr = "{{SERVER_ADDR}}"
+serverPort = {{SERVER_PORT}}
+
+auth.method = "token"
+auth.token = "{{FRP_AUTH_TOKEN}}"
+
+
+[[proxies]]
+name = "{{PROXY_NAME}}"
+type = "tcp"
+localIP = "{{LOCAL_IP}}"
+localPort = {{LOCAL_PORT}}
+remotePort = {{REMOTE_PORT}}
+

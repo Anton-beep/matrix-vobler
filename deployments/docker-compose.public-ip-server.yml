@@ -1,0 +1,25 @@
+services:
+  server-tunnel-4444:
+    image: frp-tunnel:latest
+    env_file:
+      ../publicIPServer.env # FRP_AUTH_TOKEN must be specified here
+    environment:
+      BIND_PORT: "7000"
+      FRP_MODE: "server"
+    ports:
+      - 7000:7000
+      - 4444:4444
+    restart: unless-stopped
+
+  server-tunnel-8448:
+    image: frp-tunnel:latest
+    env_file:
+      ../publicIPServer.env # FRP_AUTH_TOKEN must be specified here
+    environment:
+      BIND_PORT: "7001"
+      FRP_MODE: "server"
+    ports:
+      - 7001:7001
+      - 8448:8448
+    restart: unless-stopped
+

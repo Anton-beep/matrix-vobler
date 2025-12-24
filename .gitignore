@@ -1,1 +1,7 @@
-.env
+**.env
+/schemas
+/files
+*.tar
+/certificates/mainServer/**
+/postgresData
+/configs/matrixAuthenticationServer/**

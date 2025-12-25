@@ -10,7 +10,7 @@ services:
       - SYNAPSE_CONFIG_PATH=/data/homeserver.yaml
     volumes:
       # You may either store all the files in a local folder
-      - ../files:/data
+      - ../synapseFiles:/data
       # .. or you may split this between different storage points
       # - ./files:/data
       # - /path/to/ssd:/data/uploads

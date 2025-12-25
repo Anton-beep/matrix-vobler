@@ -1,6 +1,7 @@
 **.env
 /schemas
-/files
+/synapseFiles/*
+!/synapseFiles/vobler-tech.space.log.config
 *.tar
 /certificates/mainServer/**
 /postgresData

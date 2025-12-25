@@ -4,13 +4,19 @@ bash scripts/build/buildFrpTunnel.sh
 
 source scripts/deploy/mainServer.env
 
+ssh "$SERVER_USER@$SERVER_HOST" "mkdir -p \"$TARGET_DIR\""
+
 FILES_TO_COPY=(
   "frp-tunnel.tar"
-  "configs/nginx/mainServer.conf"
+  "configs/nginxMainServer/nginx.conf"
   "deployments/docker-compose.main-server.yml"
   "scripts/run/runMainServer.sh"
+  "scripts/postgres-init/postgres-init.sh"
   "mainServer.env"
-  "certificates/mainServer/"
+  "publicIPServer.env"
+  "certificates/mainServer"
+  "synapseFiles"
+  "configs/matrixAuthenticationServer/config.yaml"
 )
 
 for FILE in "${FILES_TO_COPY[@]}"; do

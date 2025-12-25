@@ -4,6 +4,13 @@ bash scripts/build/buildFrpTunnel.sh
 
 source scripts/deploy/mainServer.env
 
+ssh "$SERVER_USER@$SERVER_HOST" "if [ -e \"$TARGET_DIR/scripts/stop/stopMainServer.sh\" ]; then
+  echo "Stopping existing Main Server..."
+  cd \"$TARGET_DIR\"
+  chmod +x ./scripts/stop/stopMainServer.sh
+  ./scripts/stop/stopMainServer.sh
+fi"
+
 ssh "$SERVER_USER@$SERVER_HOST" "mkdir -p \"$TARGET_DIR\""
 
 FILES_TO_COPY=(
@@ -11,6 +18,7 @@ FILES_TO_COPY=(
   "configs/nginxMainServer/nginx.conf"
   "deployments/docker-compose.main-server.yml"
   "scripts/run/runMainServer.sh"
+  "scripts/stop/stopMainServer.sh"
   "scripts/postgres-init/postgres-init.sh"
   "mainServer.env"
   "publicIPServer.env"
@@ -28,4 +36,4 @@ for FILE in "${FILES_TO_COPY[@]}"; do
   scp -r "$FILE" "$SERVER_USER@$SERVER_HOST:$TARGET_DIR/$FILE"
 done
 
-ssh "$SERVER_USER@$SERVER_HOST" "chmod +x $TARGET_DIR/scripts/run/runMainServer.sh && cd $TARGET_DIR && ./scripts/run/runMainServer.sh"
+ssh "$SERVER_USER@$SERVER_HOST" "cd $TARGET_DIR && chmod +x ./scripts/run/runMainServer.sh && ./scripts/run/runMainServer.sh"

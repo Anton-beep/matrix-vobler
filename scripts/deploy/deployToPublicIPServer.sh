@@ -4,6 +4,12 @@ bash scripts/build/buildFrpTunnel.sh
 
 source scripts/deploy/publicIPServer.env
 
+ssh "$SERVER_USER@$SERVER_HOST" "if [ -e \"$TARGET_DIR/scripts/stop/stopPublicIPServer.sh\" ]; then
+  cd \"$TARGET_DIR\"
+  chmod +x ./scripts/stop/stopPublicIPServer.sh
+  ./scripts/stop/stopPublicIPServer.sh
+fi"
+
 ssh "$SERVER_USER@$SERVER_HOST" "mkdir -p \"$TARGET_DIR\""
 
 FILES_TO_COPY=(
@@ -11,6 +17,7 @@ FILES_TO_COPY=(
   "deployments/docker-compose.public-ip-server.yml"
   "publicIPServer.env"
   "scripts/run/runPublicIPServer.sh"
+  "scripts/stop/stopPublicIPServer.sh"
 )
 
 for FILE in "${FILES_TO_COPY[@]}"; do
@@ -22,4 +29,5 @@ for FILE in "${FILES_TO_COPY[@]}"; do
   scp -r "$FILE" "$SERVER_USER@$SERVER_HOST:$TARGET_DIR/$FILE"
 done
 
-ssh "$SERVER_USER@$SERVER_HOST" "chmod +x $TARGET_DIR/scripts/run/runPublicIPServer.sh && cd $TARGET_DIR && ./scripts/run/runPublicIPServer.sh"
+
+ssh "$SERVER_USER@$SERVER_HOST" "cd $TARGET_DIR && chmod +x ./scripts/run/runPublicIPServer.sh && ./scripts/run/runPublicIPServer.sh"

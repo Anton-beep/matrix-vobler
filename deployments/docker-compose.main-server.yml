@@ -61,8 +61,8 @@ services:
     image: nginx:1.29.3
     restart: unless-stopped
     volumes:
-      - ../configs/nginxMainServer:/etc/nginx
-      - ../certificates/mainServer:/etc/nginx/ssl
+      - ../configs/nginxMainServer:/etc/nginx:ro
+      - ../certificates/mainServer:/etc/ssl/certs:ro
     ports:
       - 8448:8448
       - 4444:4444

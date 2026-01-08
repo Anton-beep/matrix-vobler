@@ -31,20 +31,20 @@ title: Matrix Vobler
 
 *Это пример регистрации аккаунта с подробным описанием шагов для приложения Element X*
 
-1. Откройте приложение *Element X*.
-2. Нажмите на кнопку *"Создать аккаунт"* (Create account). (*кнопка, которую нужно нажать выделена красным прямоугольником*)
+1. Откройте приложение **Element X**.
+2. Нажмите на кнопку **"Создать аккаунт"** (Create account). (*кнопка, которую нужно нажать выделена красным прямоугольником*)
 
     <img src="assets/images/start.png" alt="Start image">
 
-3. Нажмите на кнопку *"Поменять провайдера аккаунта"* (Change account provider).
+3. Нажмите на кнопку **"Поменять провайдера аккаунта"** (Change account provider).
 
     <img src="assets/images/click-change-account-provider-button.png" alt="Change provider image">
 
-4. Выберите пункт *"Другой"* (Other).
+4. Выберите пункт **"Другой"** (Other).
 
     <img src="assets/images/change-account-provider.png" alt="Change account provider">
 
-5. Введите адрес сервера *точно так, как написано ниже (можно скопировать и вставить)*:
+5. Введите адрес сервера **точно так, как написано ниже (можно скопировать и вставить)**:
 ```
 matrix.vobler-tech.space:4444
 ```
@@ -56,7 +56,7 @@ matrix.vobler-tech.space:4444
 
     <img src="assets/images/select-account-provider.png" alt="Select account provider">
 
-7. Нажмите на кнопку *"Продолжить"* (Continue).
+7. Нажмите на кнопку **"Продолжить"** (Continue).
 
     <img src="assets/images/changed-acount-provider.png" alt="Changed account provider">
 
@@ -67,11 +67,11 @@ matrix.vobler-tech.space:4444
     - Пароль (Password)
     - Подтверждение пароля (Confirm password)
 
-    И нажмите на кнопку *"Продолжить"* (Continue).
+    И нажмите на кнопку **"Продолжить"** (Continue).
 
     <img src="assets/images/create-account-web-page.png" alt="Fill in registration form">
 
-9. Нажмите на кнопку *"Невозможно подтвердить"* (Can't confirm).
+9. Нажмите на кнопку **"Невозможно подтвердить"** (Can't confirm).
 
     <img src="assets/images/confirm-identity.png" alt="Confirm identity">
 
@@ -82,19 +82,19 @@ matrix.vobler-tech.space:4444
 
 После успешной регсистрации аккаунта необходимо сохранить ключ восстановления аккаунта. Этот шаг **обязателен**. Без него можно потерять доступ к сообщениям.
 
-1. Нажмите на *иконку профиля в левом верхнем углу*.
+1. Нажмите на **иконку профиля в левом верхнем углу**.
 
     <img src="assets/images/open-profile.png" alt="Open profile">
 
-2. Нажмите на кнопку *"Шифрование"* (Encryption).
+2. Нажмите на кнопку **"Шифрование"** (Encryption).
 
     <img src="assets/images/click-encryption-button.png" alt="Click encryption button">
 
-3. Нажмите на кнопку *"Изменить ключ восстановления"* (Change recovery key) или "Создать ключ восстановления" (Create recovery key).
+3. Нажмите на кнопку **"Изменить ключ восстановления"** (Change recovery key) или "Создать ключ восстановления" (Create recovery key).
 
     <img src="assets/images/change-recovery-key.png" alt="Click change recovery key button">
 
-4. Следуйте инструкциям приложения, *запишите ключ восстановления в надежном месте*, желательно храните его на бумаге.
+4. Следуйте инструкциям приложения, **запишите ключ восстановления в надежном месте**, желательно храните его на бумаге.
 
 # Matrix Vobler (EN)
 

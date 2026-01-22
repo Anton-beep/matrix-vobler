@@ -1,0 +1,13 @@
+serverAddr = "{{SERVER_ADDR}}"
+serverPort = {{SERVER_PORT}}
+
+auth.method = "token"
+auth.token = "{{FRP_AUTH_TOKEN}}"
+
+{{- range $_, $v := parseNumberRangePair "50100-50199,50200" "50100-50199,50200" }}
+[[proxies]]
+name = "udp-{{ $v.First }}"
+type = "udp"
+localPort = {{ $v.First }}
+remotePort = {{ $v.Second }}
+{{- end }}

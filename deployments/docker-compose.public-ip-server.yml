@@ -23,3 +23,15 @@ services:
       - 8448:8448
     restart: unless-stopped
 
+  server-tunnel-udp-range:
+    image: frp-tunnel:latest
+    env_file:
+      ../publicIPServer.env # FRP_AUTH_TOKEN must be specified here
+    environment:
+      BIND_PORT: "7002"
+      FRP_MODE: "server"
+    ports:
+      - 7002:7002
+      - 50100-50200:50100-50200/udp
+    restart: unless-stopped
+

@@ -31,6 +31,7 @@ FILES_TO_COPY=(
   "certificates/mainServer"
   "synapseFiles"
   "configs/matrixAuthenticationServer/config.yaml"
+  "configs/livekit.yaml"
 )
 
 source scripts/utils/copyFilesToServer.sh

@@ -38,7 +38,7 @@ elif [ "$FRP_MODE" = "client" ]; then
 
     # Validation
 
-        if [ -z "$SERVER_ADDR" ]; then echo "❌ Error: SERVER_ADDR is missing (IP/Domain of FRPS)."; exit 1; fi
+    if [ -z "$SERVER_ADDR" ]; then echo "❌ Error: SERVER_ADDR is missing (IP/Domain of FRPS)."; exit 1; fi
     if [ -z "$SERVER_PORT" ]; then echo "❌ Error: SERVER_PORT is missing (Port of FRPS, usually 7000)."; exit 1; fi
     if [ -z "$FRP_AUTH_TOKEN" ]; then echo "❌ Error: FRP_AUTH_TOKEN is missing."; exit 1; fi
     if [ -z "$PROXY_NAME" ];  then echo "❌ Error: PROXY_NAME is missing (Must be unique for every tunnel)."; exit 1; fi
@@ -60,6 +60,22 @@ elif [ "$FRP_MODE" = "client" ]; then
     echo "✅ Configuration generated. Connecting to $SERVER_ADDR:$SERVER_PORT..."
     exec /usr/bin/frpc -c /etc/frp/frpc.toml
 
+elif [ "$FRP_MODE" = "client-range" ]; then
+    echo "🟢 Mode: CLIENT RANGE (frpc)"
+
+    # Validation
+
+    if [ -z "$SERVER_ADDR" ]; then echo "❌ Error: SERVER_ADDR is missing (IP/Domain of FRPS)."; exit 1; fi
+    if [ -z "$SERVER_PORT" ]; then echo "❌ Error: SERVER_PORT is missing (Port of FRPS, usually 7000)."; exit 1; fi
+    if [ -z "$FRP_AUTH_TOKEN" ]; then echo "❌ Error: FRP_AUTH_TOKEN is missing."; exit 1; fi
+
+    cp /etc/frp/frpcPortRange.template.toml /etc/frp/frpc.toml
+    sed -i "s|{{SERVER_ADDR}}|$SERVER_ADDR|g" /etc/frp/frpc.toml
+    sed -i "s|{{SERVER_PORT}}|$SERVER_PORT|g" /etc/frp/frpc.toml
+    sed -i "s|{{FRP_AUTH_TOKEN}}|$FRP_AUTH_TOKEN|g" /etc/frp/frpc.toml
+
+    echo "✅ Configuration generated. Connecting to $SERVER_ADDR:$SERVER_PORT..."
+    exec /usr/bin/frpc -c /etc/frp/frpc.toml
 
 # ----------------------------------------------------------------
 # 4. INVALID MODE CATCH

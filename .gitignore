@@ -6,3 +6,4 @@
 /certificates/mainServer/**
 /postgresData
 /configs/matrixAuthenticationServer/**
+/configs/livekit.yaml

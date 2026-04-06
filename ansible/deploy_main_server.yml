@@ -1,0 +1,93 @@
+---
+- name: Build local resources before deployment
+  hosts: localhost
+  connection: local
+  tasks:
+    - name: Build FRP Tunnel Docker image
+      command: docker build -t frp-tunnel:latest -f ./build/frp-tunnel.Dockerfile .
+      args:
+        chdir: "../"
+
+    - name: Save FRP Tunnel Docker image to tar
+      command: docker save frp-tunnel:latest -o ./frp-tunnel.tar
+      args:
+        chdir: "../"
+
+- name: Deploy Main Server
+  hosts: main_server
+  tasks:
+    - name: Execute docker compose down to stop existing stack
+      community.docker.docker_compose_v2:
+        project_src: "{{ target_dir }}/deployments"
+        files:
+          - docker-compose.main-server.yml
+        project_name: matrix-main-server
+        state: absent
+        remove_orphans: yes
+        timeout: 120
+
+    - name: Create directories on target
+      file:
+        path: "{{ target_dir }}/{{ item }}"
+        state: directory
+        mode: "0755"
+      with_items:
+        - "configs"
+        - "configs/nginxMainServer"
+        - "deployments"
+        - "scripts/postgres-init"
+        - "certificates/mainServer"
+        - "synapseFiles"
+        - "configs/matrixAuthenticationServer"
+
+    - name: Generate mainServer.env
+      template:
+        src: "../mainServer.env.j2"
+        dest: "{{ target_dir }}/mainServer.env"
+        mode: "0600"
+
+    - name: Generate livekit.yaml
+      template:
+        src: "../configs/livekit.yaml.j2"
+        dest: "{{ target_dir }}/configs/livekit.yaml"
+
+    - name: Generate publicIPServer.env
+      template:
+        src: "../publicIPServer.env.j2"
+        dest: "{{ target_dir }}/publicIPServer.env"
+        mode: "0600"
+
+    - name: Generate homeserver.yaml
+      template:
+        src: "../synapseFiles/homeserver.yaml.j2"
+        dest: "{{ target_dir }}/synapseFiles/homeserver.yaml"
+
+    - name: Generate matrixAuthenticationServer config
+      template:
+        src: "../configs/matrixAuthenticationServer/config.yaml.j2"
+        dest: "{{ target_dir }}/configs/matrixAuthenticationServer/config.yaml"
+
+    - name: Copy files and directories to target server
+      copy:
+        src: "../{{ item }}"
+        dest: "{{ target_dir }}/{{ item }}"
+        mode: '0644'
+      with_items:
+        - frp-tunnel.tar
+        - configs/nginxMainServer/nginx.conf
+        - deployments/docker-compose.main-server.yml
+        - scripts/postgres-init/postgres-init.sh
+        - certificates/mainServer/
+        - synapseFiles/vobler-tech.space.log.config
+
+    - name: Load FRP Tunnel Docker image on target server
+      command: docker load -i {{ target_dir }}/frp-tunnel.tar
+
+    - name: Start docker compose stack
+      community.docker.docker_compose_v2:
+        project_src: "{{ target_dir }}/deployments"
+        files:
+          - docker-compose.main-server.yml
+        project_name: matrix-main-server
+        state: present
+

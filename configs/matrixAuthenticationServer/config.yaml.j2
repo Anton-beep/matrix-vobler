@@ -1,0 +1,76 @@
+account:
+  # Allow users to register themselves
+  password_registration_enabled: true
+  password_registration_email_required: false
+http:
+  listeners:
+  - name: web
+    resources:
+    - name: discovery
+    - name: human
+    - name: oauth
+    - name: compat
+    - name: graphql
+    - name: assets
+    binds:
+    - address: '[::]:8080'
+    proxy_protocol: false
+
+  - name: internal
+    resources:
+    - name: health
+    binds:
+    - host: localhost
+      port: 8081
+    proxy_protocol: false
+  trusted_proxies:
+  - 192.168.0.0/16
+  - 172.16.0.0/12
+  - 10.0.0.0/10
+  - 127.0.0.1/8
+  - fd00::/8
+  - ::1/128
+  public_base: https://matrix.vobler-tech.space:4444/
+  issuer: https://matrix.vobler-tech.space:4444/
+database:
+  uri: postgresql://mas:{{ MAS_POSTGRES_PASSWORD }}@db:5432/{{ MAS_POSTGRES_USER }}
+  max_connections: 10
+  min_connections: 0
+  connect_timeout: 30
+  idle_timeout: 600
+  max_lifetime: 1800
+email:
+  enabled: false
+  from: '"Authentication Service" <root@localhost>'
+  reply_to: '"Authentication Service" <root@localhost>'
+  transport: blackhole
+secrets:
+  encryption: "{{ MAS_ENCRYPTION_SECRET }}"
+  keys:
+  - key: |
+      -----BEGIN RSA PRIVATE KEY-----
+{{ MAS_RSA_PRIVATE_KEY | indent(6, true) }}
+      -----END RSA PRIVATE KEY-----
+  - key: |
+      -----BEGIN EC PRIVATE KEY-----
+{{ MAS_EC_PRIVATE_KEY_1 | indent(6, true) }}
+      -----END EC PRIVATE KEY-----
+  - key: |
+      -----BEGIN EC PRIVATE KEY-----
+{{ MAS_EC_PRIVATE_KEY_2 | indent(6, true) }}
+      -----END EC PRIVATE KEY-----
+  - key: |
+      -----BEGIN EC PRIVATE KEY-----
+{{ MAS_EC_PRIVATE_KEY_3 | indent(6, true) }}
+      -----END EC PRIVATE KEY-----
+passwords:
+  enabled: true
+  schemes:
+  - version: 1
+    algorithm: argon2id
+  minimum_complexity: 3
+matrix:
+  kind: synapse
+  homeserver: matrix.vobler-tech.space:4444
+  secret: "{{ MATRIX_AUTH_SERVICE_SECRET }}"
+  endpoint: http://synapse:8008

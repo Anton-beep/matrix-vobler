@@ -1,9 +1,8 @@
 **.env
 /schemas
-/synapseFiles/*
-!/synapseFiles/vobler-tech.space.log.config
 *.tar
 /certificates/mainServer/**
 /postgresData
-/configs/matrixAuthenticationServer/**
 /configs/livekit.yaml
+ansible/.vault_pass.txt
+

@@ -1,0 +1,61 @@
+---
+- name: Build local resources before deployment
+  hosts: localhost
+  connection: local
+  tasks:
+    - name: Build FRP Tunnel Docker image
+      command: docker build -t frp-tunnel:latest -f ./build/frp-tunnel.Dockerfile .
+      args:
+        chdir: "../"
+
+    - name: Save FRP Tunnel Docker image to tar
+      command: docker save frp-tunnel:latest -o ./frp-tunnel.tar
+      args:
+        chdir: "../"
+
+- name: Deploy Public IP Server
+  hosts: public_ip_server
+  tasks:
+    - name: Execute docker compose down to stop existing stack
+      community.docker.docker_compose_v2:
+        project_src: "{{ target_dir }}/deployments"
+        files:
+          - docker-compose.public-ip-server.yml
+        project_name: matrix-public-ip-server
+        state: absent
+        remove_orphans: yes
+        timeout: 120
+
+    - name: Create directories on target
+      file:
+        path: "{{ target_dir }}/{{ item }}"
+        state: directory
+        mode: "0755"
+      with_items:
+        - "deployments"
+
+    - name: Copy files and directories to target server
+      copy:
+        src: "../{{ item }}"
+        dest: "{{ target_dir }}/{{ item }}"
+        mode: '0644'
+      with_items:
+        - frp-tunnel.tar
+        - deployments/docker-compose.public-ip-server.yml
+
+    - name: Template publicIPServer.env file on target server
+      template:
+        src: "../publicIPServer.env.j2"
+        dest: "{{ target_dir }}/deployments/publicIPServer.env"
+        mode: '0644'
+
+    - name: Load FRP Tunnel Docker image on target server
+      command: docker load -i {{ target_dir }}/frp-tunnel.tar
+
+    - name: Start docker compose stack
+      community.docker.docker_compose_v2:
+        project_src: "{{ target_dir }}/deployments"
+        files:
+          - docker-compose.public-ip-server.yml
+        project_name: matrix-public-ip-server
+        state: present

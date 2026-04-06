@@ -85,6 +85,7 @@ services:
       # .. or store them on some high performance storage for better results
       # - /path/to/ssd/storage:/var/lib/postgresql
     restart: unless-stopped
+    stop_grace_period: 2m
     networks:
       - matrix-network
   

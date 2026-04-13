@@ -35,3 +35,51 @@ services:
       - 50100-50200:50100-50200/udp
     restart: unless-stopped
 
+  server-tunnel-turn:
+    image: frp-tunnel:latest
+    env_file:
+      ../publicIPServer.env # FRP_AUTH_TOKEN must be specified here
+    environment:
+      BIND_PORT: "7003"
+      FRP_MODE: "server"
+    ports:
+      - 7003:7003
+      - 9889:9889
+    restart: unless-stopped
+
+  server-tunnel-turn-udp:
+    image: frp-tunnel:latest
+    env_file:
+      ../publicIPServer.env # FRP_AUTH_TOKEN must be specified here
+    environment:
+      BIND_PORT: "7004"
+      FRP_MODE: "server"
+    ports:
+      - 7004:7004
+      - 3478:3478/udp
+    restart: unless-stopped
+
+  server-tunnel-turn-tls:
+    image: frp-tunnel:latest
+    env_file:
+      ../publicIPServer.env # FRP_AUTH_TOKEN must be specified here
+    environment:
+      BIND_PORT: "7005"
+      FRP_MODE: "server"
+    ports:
+      - 7005:7005
+      - 5349:5349
+    restart: unless-stopped
+
+  server-tunnel-rtc-tcp:
+    image: frp-tunnel:latest
+    env_file:
+      ../publicIPServer.env # FRP_AUTH_TOKEN must be specified here
+    environment:
+      BIND_PORT: "7006"
+      FRP_MODE: "server"
+    ports:
+      - 7006:7006
+      - 7881:7881
+    restart: unless-stopped
+

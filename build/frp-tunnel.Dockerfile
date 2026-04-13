@@ -17,6 +17,7 @@ RUN curl -L https://github.com/fatedier/frp/releases/download/v${FRP_VERSION}/fr
 COPY configs/frps.toml /etc/frp/frps.template.toml
 COPY configs/frpc.toml /etc/frp/frpc.template.toml
 COPY configs/frpcPortRange.toml /etc/frp/frpcPortRange.template.toml
+COPY configs/frpcUDP.toml /etc/frp/frpcUDP.template.toml
 COPY scripts/dockerEntrypoints/tunnelEntrypoint.sh /tunnelEntrypoint.sh
 
 RUN chmod +x /tunnelEntrypoint.sh

@@ -60,6 +60,31 @@ elif [ "$FRP_MODE" = "client" ]; then
     echo "✅ Configuration generated. Connecting to $SERVER_ADDR:$SERVER_PORT..."
     exec /usr/bin/frpc -c /etc/frp/frpc.toml
 
+elif [ "$FRP_MODE" = "client-udp" ]; then
+    echo "🟢 Mode: CLIENT UDP (frpc)"
+
+    # Validation
+    if [ -z "$SERVER_ADDR" ]; then echo "❌ Error: SERVER_ADDR is missing."; exit 1; fi
+    if [ -z "$SERVER_PORT" ]; then echo "❌ Error: SERVER_PORT is missing."; exit 1; fi
+    if [ -z "$FRP_AUTH_TOKEN" ]; then echo "❌ Error: FRP_AUTH_TOKEN is missing."; exit 1; fi
+    if [ -z "$PROXY_NAME" ];  then echo "❌ Error: PROXY_NAME is missing."; exit 1; fi
+    if [ -z "$LOCAL_IP" ];    then echo "❌ Error: LOCAL_IP is missing."; exit 1; fi
+    if [ -z "$LOCAL_PORT" ];  then echo "❌ Error: LOCAL_PORT is missing."; exit 1; fi
+    if [ -z "$REMOTE_PORT" ]; then echo "❌ Error: REMOTE_PORT is missing."; exit 1; fi
+
+    # Generate Config
+    cp /etc/frp/frpcUDP.template.toml /etc/frp/frpc.toml
+    sed -i "s|{{SERVER_ADDR}}|$SERVER_ADDR|g" /etc/frp/frpc.toml
+    sed -i "s|{{SERVER_PORT}}|$SERVER_PORT|g" /etc/frp/frpc.toml
+    sed -i "s|{{FRP_AUTH_TOKEN}}|$FRP_AUTH_TOKEN|g" /etc/frp/frpc.toml
+    sed -i "s|{{PROXY_NAME}}|$PROXY_NAME|g" /etc/frp/frpc.toml
+    sed -i "s|{{LOCAL_IP}}|$LOCAL_IP|g" /etc/frp/frpc.toml
+    sed -i "s|{{LOCAL_PORT}}|$LOCAL_PORT|g" /etc/frp/frpc.toml
+    sed -i "s|{{REMOTE_PORT}}|$REMOTE_PORT|g" /etc/frp/frpc.toml
+
+    echo "✅ Configuration generated. Connecting to $SERVER_ADDR:$SERVER_PORT..."
+    exec /usr/bin/frpc -c /etc/frp/frpc.toml
+
 elif [ "$FRP_MODE" = "client-range" ]; then
     echo "🟢 Mode: CLIENT RANGE (frpc)"
 

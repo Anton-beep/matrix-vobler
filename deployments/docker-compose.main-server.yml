@@ -45,14 +45,18 @@ services:
     command: "--config /etc/livekit.yaml"
     volumes:
       - ../configs/livekit.yaml:/etc/livekit.yaml:ro
+      - ../certificates/mainServer:/etc/ssl/certs:ro
       - /etc/timezone:/etc/timezone:ro
       - /etc/localtime:/etc/localtime:ro
     networks:
       - matrix-network
     ports:
       - 7880:7880
-      - 7881:7881/udp
+      - 7881:7881/tcp
       - 50100-50200:50100-50200/udp
+      - 9889:9889/tcp
+      - 3478:3478/udp
+      - 5349:5349/tcp
 
   matrixrtc-auth-service:
     image: ghcr.io/element-hq/lk-jwt-service:latest
@@ -141,6 +145,70 @@ services:
       SERVER_ADDR: "matrix.vobler-tech.space"
       SERVER_PORT: 7002
       FRP_MODE: "client-range"
+    restart: unless-stopped
+    networks:
+      - matrix-network
+
+  clientTunnelRtcTCP:
+    image: frp-tunnel:latest
+    env_file:
+      ../publicIPServer.env # FRP_AUTH_TOKEN must be specified here
+    environment:
+      SERVER_ADDR: "matrix.vobler-tech.space"
+      SERVER_PORT: 7006
+      PROXY_NAME: "rtcTcp7881"
+      LOCAL_IP: "livekit-server"
+      LOCAL_PORT: "7881"
+      REMOTE_PORT: "7881"
+      FRP_MODE: "client"
+    restart: unless-stopped
+    networks:
+      - matrix-network
+
+  clientTunnelTurn:
+    image: frp-tunnel:latest
+    env_file:
+      ../publicIPServer.env # FRP_AUTH_TOKEN must be specified here
+    environment:
+      SERVER_ADDR: "matrix.vobler-tech.space"
+      SERVER_PORT: 7003
+      PROXY_NAME: "turn9889"
+      LOCAL_IP: "livekit-server"
+      LOCAL_PORT: "9889"
+      REMOTE_PORT: "9889"
+      FRP_MODE: "client"
+    restart: unless-stopped
+    networks:
+      - matrix-network
+
+  clientTunnelTurnUDP:
+    image: frp-tunnel:latest
+    env_file:
+      ../publicIPServer.env # FRP_AUTH_TOKEN must be specified here
+    environment:
+      SERVER_ADDR: "matrix.vobler-tech.space"
+      SERVER_PORT: 7004
+      PROXY_NAME: "turn3478udp"
+      LOCAL_IP: "livekit-server"
+      LOCAL_PORT: "3478"
+      REMOTE_PORT: "3478"
+      FRP_MODE: "client-udp"
+    restart: unless-stopped
+    networks:
+      - matrix-network
+
+  clientTunnelTurnTLS:
+    image: frp-tunnel:latest
+    env_file:
+      ../publicIPServer.env # FRP_AUTH_TOKEN must be specified here
+    environment:
+      SERVER_ADDR: "matrix.vobler-tech.space"
+      SERVER_PORT: 7005
+      PROXY_NAME: "turn5349tls"
+      LOCAL_IP: "livekit-server"
+      LOCAL_PORT: "5349"
+      REMOTE_PORT: "5349"
+      FRP_MODE: "client"
     restart: unless-stopped
     networks:
       - matrix-network
